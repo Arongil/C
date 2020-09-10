@@ -1,2 +1,2 @@
 # C
-Contains all code for my school class Practical C Programming.
+Contains all code for my class Practical C Programming.
