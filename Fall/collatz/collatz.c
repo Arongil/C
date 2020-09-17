@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    printf("The number < %i with the largest stopping time is %i, with a stopping time of %i", bound, n, s);
+    printf("The number < %i with the largest stopping time is %i, with a stopping time of %i", bound, n, largest);
 
     return 0;
 }
