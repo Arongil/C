@@ -1,0 +1,1 @@
+It turns out the number < 100,000 with the largest stopping time is 77031 with a stopping time of 226.
