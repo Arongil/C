@@ -1,0 +1,24 @@
+Make files are really smart!
+
+- You can specify dependencies.
+- You can make Make Files really sophisticated or simple.
+- They are much more general than just compiling c code.
+
+$make
+
+- Requires a Makefile to run.
+- Each rule specifies a *product* we want it to build, plus the dependencies and the steps to create it.
+- Makefiles usually live in the same directory as your code.
+
+Structure:
+```
+product: dependencies
+    steps to build this product
+    ... more rules ...
+```
+
+Ex. Let's say we want to have a Makefile to compile the prime checker.
+```
+primes: primes.c
+    clang -std=c11 -Wall primes.c -o primes
+```
