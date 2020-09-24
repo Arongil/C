@@ -38,6 +38,8 @@ int main(int argc, char *argv[]) {
     int a[20]; // POTENTIAL GARBAGE
     int a[20] = {1, 2}; // [1, 2, 0, 0, ...]
     int a[20] = {0}; // all zeros
+
+    int a[]; // invalid 
      *
      */
 
@@ -46,7 +48,14 @@ int main(int argc, char *argv[]) {
         printf("%i\n", a[i]);
     }
 
-    /* int a[]; // invalid */
+    // When printing arrays, remember you need the contents and the length both stored, because C doesn't know the length offhand.
+
+    /*
+     * Array caveats:
+     * Arrays exist on the _stack_ not the _heap_ so far.
+     * You _cannot return arrays made this way from functions._
+     * You would need to make the arrays differently, with the heap.
+     */
 
     return 0;
 }
