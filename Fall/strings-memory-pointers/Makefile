@@ -6,3 +6,6 @@ mathy: mathy.c
 
 memory: memory.c
 	$(CC) $(CFLAGS) memory.c -o memory
+
+pointers: pointers.c
+	$(CC) $(CFLAGS) pointers.c -o pointers
