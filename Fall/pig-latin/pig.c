@@ -12,6 +12,16 @@ bool is_vowel(char c) {
 bool is_uppercase(const char c) {
     return c >= 65 && c < 91;
 }
+bool is_lowercase(const char c) {
+    return c >= 97 && c < 123;
+}
+bool is_letter(const char c) {
+    // for our purposes, an apostrophe ' is a letter. Thus, "can't" --> "an'tcay".
+    return is_lowercase(c) || is_uppercase(c) || c == 39;
+}
+bool is_space(const char c) {
+    return c == 32;
+}
 
 int consonant_prefix_length(const char *str) {
     int index = 0;
@@ -51,6 +61,43 @@ char *word_to_pig_latin(const char *word) {
     }
     new_str[new_len - 3] = 'a';
     new_str[new_len - 2] = 'y';
+
+    return new_str;
+}
+
+// Ex: "Hello, world!" --> "Ellohay, orldway!"
+char *to_pig_latin(const char *str) {
+    int word_count = 1;
+    int str_length = strlen(str);
+    for (int i = 0; i < str_length; i++) {
+        if (is_space(str[i])) {
+            word_count += 1;
+        }
+    }
+
+    // Each word lengthens by at most 3 characters in pig latin.
+    // We run through str and construct new_str on the fly.
+    char *new_str = calloc(str_length + word_count * 3, sizeof(char));
+    int index = 0; // where we are in building new_str
+    for (int i = 0; i < str_length; i++) {
+        if (!is_letter(str[i])) {
+            new_str[index] = str[i];
+            index++;
+            continue;
+        }
+        // Assume we are at the first letter of a word.
+        // Find the entire word, transform it, move on.
+        int word_length = 1;
+        while (is_letter(str[i + word_length])) {
+            word_length++;
+        }
+        char *word = calloc(word_length + 1, sizeof(char));
+        strncpy(word, str + i, word_length);
+        char *pig_word = word_to_pig_latin(word);
+        strcpy(new_str + index, pig_word);
+        index += strlen(pig_word);
+        i += word_length - 1;
+    }
 
     return new_str;
 }
@@ -103,6 +150,9 @@ void test_pig_latin() {
 
 int main(int argc, char *argv[]) {
     test_pig_latin();
+
+    char *str = "Today is such a lovely day! I can't wait to get programming.";
+    printf("Original:  %s\nPig Latin: %s\n", str, to_pig_latin(str));
 
     return 0;
 }
