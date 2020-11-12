@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 #include <ctype.h>
 #include <stdbool.h>
 
@@ -148,11 +148,22 @@ void test_pig_latin() {
     printf("%d/%d cases passed\n", passed_casses, failed_cases + passed_casses);
 }
 
-int main(int argc, char *argv[]) {
-    test_pig_latin();
+char *read_str() {
+    printf("What sentence would you like to translate?\n>");
+    char *str = malloc(16384 * sizeof(char));
+    fgets(str, 16384 * sizeof(char), stdin);
+    return str;
+}
 
-    char *str = "Today is such a lovely day! I can't wait to get programming.";
-    printf("Original:  %s\nPig Latin: %s\n", str, to_pig_latin(str));
+int main(int argc, char *argv[]) {
+    // test_pig_latin();
+
+    // char *str = "Today is such a lovely day! I can't wait to get programming.";
+    // printf("Original:  %s\nPig Latin: %s\n", str, to_pig_latin(str));
+
+    char *str = read_str();
+    printf("%s", to_pig_latin(str));
+    free(str);
 
     return 0;
 }
