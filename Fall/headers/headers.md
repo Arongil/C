@@ -52,7 +52,7 @@ Solution: allow the file to be included as many times as we want, but only the f
 
 ```
 #ifndef _UTILS_H_GUARD
-#define _UTILS_H_GUARD
+#define _UTILS_H_GUARD 1
 
 // blah blah blah
 // all header code goes here, even other includes
