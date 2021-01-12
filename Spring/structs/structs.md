@@ -98,14 +98,14 @@ typedef struct {
 7. You can put an array in the struct, but be warned: it will always have a constant amount of elements. You must know how long the array should be.
 
 ```
-typedef player {
+typedef struct {
     const char *name;
     int hp;
     int exp;
     point pos;
 
     int stats[16];
-} stats;
+} player;
 ```
 
 8. You can nest initializers, so for example:
