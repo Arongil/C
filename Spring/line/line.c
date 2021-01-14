@@ -57,5 +57,6 @@ int main(int argc, char *argv[]) {
     printf("Should be 0: %i\n", point_on_line(l2, p3));
     printf("Should be 0: %i\n", point_on_line(l1, p2));
     printf("Should be 0: %i\n", point_on_line(l2, p1));
+
     return 0;
 }
