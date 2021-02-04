@@ -8,7 +8,7 @@ We say O(n) is *linear time*. The number k limits us to asymptotic consideration
 
 - Finding a value of an array at an index is O(1).
 - Inserting a value into an array at an index is O(n).
-- Deleting the last element in an array is O(n).
+- Deleting an element in an array is O(n).
 
 *Linked lists flip this paradigm*. Finding a value is O(n), but inserting and deleting is O(1). This is useful when we don't care about the order of objects, but we need to frequently add and remove elements. For example, all the objects in the world of a video game. We need to add bullets, remove occluded trees, etc. We never care about the "fifth" object in the world. Linked lists would be a good architecture here.
 
@@ -48,4 +48,44 @@ typedef struct node {
     int value;
     struct node *next;
 } node;
+```
+
+# Doubly linked lists
+
+Sometimes we want both a `next` and a `prev` pointer:
+
+```
+typedef struct node {
+    int value;
+    node *next;
+    node *prev;
+} node;
+```
+
+Now deletions look like this (without edge case considerations):
+
+```
+void list_remove(node loc) {
+    loc->prev->next = loc->next;
+    loc->next->prev = loc->prev;
+}
+```
+
+To perform an indexing operation:
+
+```
+node get_index(node *head, size_t index) {
+    node *n = head;
+    int j = 0;
+    while (n != NULL) {
+        if (i == j) {
+            return n;
+        }
+
+        j++;
+        n = n->next;
+    }
+
+    return NULL;
+}
 ```
