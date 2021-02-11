@@ -9,12 +9,12 @@ The modern sort function in Python is `sorted`, which takes an optional `key` ar
 ```
 class Player:
 
-    def __init__(self, name="", level=100):
+   def __init__(self, name="", level=100):
         self.name = name
         self.level = level
 
 def f(player):
-    retunr player.level
+    return player.level
 
 players = [Player("Bob", 5), Player("Jill", 2), Player("Tim", 4)]
 
@@ -44,7 +44,7 @@ void repeat(some_type f, size_t n) {
 }
 ```
 
-The website [Gosh Darn Function Pointers](goshdarnfunctionpointers.com) is your savior!
+The website [goshdarnfunctionpointers.com](https://goshdarnfunctionpointers.com) is your savior!
 
 In short: the type of a function pointers includes the type of its return value and the type of all its arguments. Here's how it works:
 
