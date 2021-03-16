@@ -62,6 +62,7 @@ char *download_url(const char *url) {
             fprintf(stderr, "ERROR: curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
         }
 
+        fprintf(stderr, "\n");
         char *output = malloc(fileSize(writer));
         stringify(output, writer);
 
