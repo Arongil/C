@@ -105,52 +105,52 @@ static int recordCallback( const void *inputBuffer, void *outputBuffer,
 ** It may be called at interrupt level on some machines so don't do anything
 ** that could mess up the system like calling malloc() or free().
 */
-static int playCallback( const void *inputBuffer, void *outputBuffer,
-                         unsigned long framesPerBuffer,
-                         const PaStreamCallbackTimeInfo* timeInfo,
-                         PaStreamCallbackFlags statusFlags,
-                         void *userData )
-{
-    paTestData *data = (paTestData*)userData;
-    SAMPLE *rptr = &data->recordedSamples[data->frameIndex * NUM_CHANNELS];
-    SAMPLE *wptr = (SAMPLE*)outputBuffer;
-    unsigned int i;
-    int finished;
-    unsigned int framesLeft = data->maxFrameIndex - data->frameIndex;
-
-    (void) inputBuffer; /* Prevent unused variable warnings. */
-    (void) timeInfo;
-    (void) statusFlags;
-    (void) userData;
-
-    if( framesLeft < framesPerBuffer )
-    {
-        /* final buffer... */
-        for( i=0; i<framesLeft; i++ )
-        {
-            *wptr++ = *rptr++;  /* left */
-            if( NUM_CHANNELS == 2 ) *wptr++ = *rptr++;  /* right */
-        }
-        for( ; i<framesPerBuffer; i++ )
-        {
-            *wptr++ = 0;  /* left */
-            if( NUM_CHANNELS == 2 ) *wptr++ = 0;  /* right */
-        }
-        data->frameIndex += framesLeft;
-        finished = paComplete;
-    }
-    else
-    {
-        for( i=0; i<framesPerBuffer; i++ )
-        {
-            *wptr++ = *rptr++;  /* left */
-            if( NUM_CHANNELS == 2 ) *wptr++ = *rptr++;  /* right */
-        }
-        data->frameIndex += framesPerBuffer;
-        finished = paContinue;
-    }
-    return finished;
-}
+//static int playCallback( const void *inputBuffer, void *outputBuffer,
+//                         unsigned long framesPerBuffer,
+//                         const PaStreamCallbackTimeInfo* timeInfo,
+//                         PaStreamCallbackFlags statusFlags,
+//                         void *userData )
+//{
+//    paTestData *data = (paTestData*)userData;
+//    SAMPLE *rptr = &data->recordedSamples[data->frameIndex * NUM_CHANNELS];
+//    SAMPLE *wptr = (SAMPLE*)outputBuffer;
+//    unsigned int i;
+//    int finished;
+//    unsigned int framesLeft = data->maxFrameIndex - data->frameIndex;
+//
+//    (void) inputBuffer; /* Prevent unused variable warnings. */
+//    (void) timeInfo;
+//    (void) statusFlags;
+//    (void) userData;
+//
+//    if( framesLeft < framesPerBuffer )
+//    {
+//        /* final buffer... */
+//        for( i=0; i<framesLeft; i++ )
+//        {
+//            *wptr++ = *rptr++;  /* left */
+//            if( NUM_CHANNELS == 2 ) *wptr++ = *rptr++;  /* right */
+//        }
+//        for( ; i<framesPerBuffer; i++ )
+//        {
+//            *wptr++ = 0;  /* left */
+//            if( NUM_CHANNELS == 2 ) *wptr++ = 0;  /* right */
+//        }
+//        data->frameIndex += framesLeft;
+//        finished = paComplete;
+//    }
+//    else
+//    {
+//        for( i=0; i<framesPerBuffer; i++ )
+//        {
+//            *wptr++ = *rptr++;  /* left */
+//            if( NUM_CHANNELS == 2 ) *wptr++ = *rptr++;  /* right */
+//        }
+//        data->frameIndex += framesPerBuffer;
+//        finished = paContinue;
+//    }
+//    return finished;
+//}
 
 
 /*******************************************************************/
@@ -199,7 +199,7 @@ int listen(paTestData *data) {
     while( ( err = Pa_IsStreamActive( stream ) ) == 1 )
     {
         Pa_Sleep(1000);
-        printf("index = %d\n", data->frameIndex ); fflush(stdout);
+        // printf("index = %d\n", data->frameIndex ); fflush(stdout);
     }
     if( err < 0 ) goto done;
 
@@ -219,33 +219,33 @@ int listen(paTestData *data) {
     outputParameters.suggestedLatency = Pa_GetDeviceInfo( outputParameters.device )->defaultLowOutputLatency;
     outputParameters.hostApiSpecificStreamInfo = NULL;
 
-    printf("\n=== Now playing back. ===\n"); fflush(stdout);
-    err = Pa_OpenStream(
-              &stream,
-              NULL, /* no input */
-              &outputParameters,
-              SAMPLE_RATE,
-              FRAMES_PER_BUFFER,
-              paClipOff,      /* we won't output out of range samples so don't bother clipping them */
-              playCallback,
-              data );
-    if( err != paNoError ) goto done;
-
-    if( stream )
-    {
-        err = Pa_StartStream( stream );
-        if( err != paNoError ) goto done;
-        
-        printf("Waiting for playback to finish.\n"); fflush(stdout);
-
-        while( ( err = Pa_IsStreamActive( stream ) ) == 1 ) Pa_Sleep(100);
-        if( err < 0 ) goto done;
-        
-        err = Pa_CloseStream( stream );
-        if( err != paNoError ) goto done;
-        
-        printf("Done.\n"); fflush(stdout);
-    }
+//    printf("\n=== Now playing back. ===\n"); fflush(stdout);
+//    err = Pa_OpenStream(
+//              &stream,
+//              NULL, /* no input */
+//              &outputParameters,
+//              SAMPLE_RATE,
+//              FRAMES_PER_BUFFER,
+//              paClipOff,      /* we won't output out of range samples so don't bother clipping them */
+//              playCallback,
+//              data );
+//    if( err != paNoError ) goto done;
+//
+//    if( stream )
+//    {
+//        err = Pa_StartStream( stream );
+//        if( err != paNoError ) goto done;
+//        
+//        printf("Waiting for playback to finish.\n"); fflush(stdout);
+//
+//        while( ( err = Pa_IsStreamActive( stream ) ) == 1 ) Pa_Sleep(100);
+//        if( err < 0 ) goto done;
+//        
+//        err = Pa_CloseStream( stream );
+//        if( err != paNoError ) goto done;
+//        
+//        printf("Done.\n"); fflush(stdout);
+//    }
 
 done:
     Pa_Terminate();
@@ -350,7 +350,7 @@ int read_key(double *arr, int n) {
 }
 
 int genie_accept(double *freq, int n) {
-    double threshold = 0.5;
+    double threshold = 0.8;
     double *key = malloc(n * sizeof(double));
     if (read_key(key, n) == 1) {
         printf("Error: mismatch between the size of the audio sample and the key.");
@@ -385,8 +385,7 @@ int init_data(paTestData *data) {
     return 0;
 }
 /*******************************************************************/
-int main(int argc, char *argv[])
-{
+int attempt_genie() {
     paTestData data;
 
     init_data(&data);
@@ -399,24 +398,36 @@ int main(int argc, char *argv[])
     double *out = malloc(next_pow_of_2 * sizeof(double));
     fft(padded_samples, out, next_pow_of_2);
 
-    if (argc == 2 && strcmp(argv[1], "key") == 0) {
-        for (int i = 0; i < next_pow_of_2; i++) {
-            // fprintf(stderr, "%.0f,%.3f\n", (double) SAMPLE_RATE/next_pow_of_2 * i, out[i]);
-            fprintf(stderr, "%.3f\n", out[i]);
-        }
-    } else {
-        int status = genie_accept(out, next_pow_of_2); 
-        if (status == 0) {
-            printf("\n\nThe genie does not accept your summoning.");
-        } else {
-            printf("\n\nThe genie is summoned!");
-        }
-    }
+    int status = genie_accept(out, next_pow_of_2); 
 
     free(data.recordedSamples);
     free(samples);
     free(padded_samples);
     free(out);
 
-    return 0;
+    return status;
+}
+
+void reset_key() {
+    paTestData data;
+
+    init_data(&data);
+    listen(&data);
+
+    int n = data.maxFrameIndex * NUM_CHANNELS;
+    int next_pow_of_2 = n;
+    double *samples = toDouble(data.recordedSamples, n);
+    double *padded_samples = pad_to_power_of_2(samples, n, &next_pow_of_2);
+    double *out = malloc(next_pow_of_2 * sizeof(double));
+    fft(padded_samples, out, next_pow_of_2);
+
+    FILE *genie_key = fopen("genie_key.txt", "w");
+    for (int i = 0; i < next_pow_of_2; i++) {
+        fprintf(genie_key, "%.3f\n", out[i]);
+    }
+
+    free(data.recordedSamples);
+    free(samples);
+    free(padded_samples);
+    free(out);
 }
