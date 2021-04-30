@@ -249,8 +249,8 @@ int listen(paTestData *data) {
 
 done:
     Pa_Terminate();
-    if( data->recordedSamples )       /* Sure it is NULL or valid. */
-        // free( data.rec->rdedSamples );
+    // if( data->recordedSamples )       /* Sure it is NULL or valid. */
+    //    free( data->recordedSamples );
     if( err != paNoError )
     {
         fprintf( stderr, "An error occured while using the portaudio stream\n" );
@@ -313,17 +313,34 @@ void fft(double *data, double *real_out, int N) {
     fftw_free(out);
 }
 /*******************************************************************/
-double diff(double *freq1, double *freq2, int n) {
+void normalize(double *dest, const double *src, int n) {
+    double mag = 0;
+    for (int i = 0; i < n; i++) {
+        mag += src[i]*src[i];
+    }
+    double inv_mag = 1 / sqrt(mag);
+    for (int i = 0; i < n; i++) {
+        dest[i] = src[i] * inv_mag;
+    }
+}
+
+double normalized_diff(double *freq1, double *freq2, int n) {
+    double *normalized1 = malloc(n * sizeof(double));
+    double *normalized2 = malloc(n * sizeof(double));
+    normalize(normalized1, freq1, n);
+    normalize(normalized2, freq2, n);
     double sum = 0, d;
     for (int i = 0; i < n; i++) {
-        d = freq1[i] - freq2[i];
+        d = normalized1[i] - normalized2[i];
         sum += d*d;
     }
+    free(normalized1);
+    free(normalized2);
     return sum;
 }
 
 int read_key(double *arr, int n) {
-    FILE *genie_key = fopen("genie_key", "r");
+    FILE *genie_key = fopen("genie_key.txt", "r");
     for (int i = 0; i < n; i++) {
         if (fscanf(genie_key, "%lf", &arr[i]) != 1) {
             return 1;
@@ -333,13 +350,17 @@ int read_key(double *arr, int n) {
 }
 
 int genie_accept(double *freq, int n) {
-    double threshold = 100;
+    double threshold = 0.5;
     double *key = malloc(n * sizeof(double));
     if (read_key(key, n) == 1) {
-        printf("Error: mismatch between size of audio sample and key.\n\n");
+        printf("Error: mismatch between the size of the audio sample and the key.");
     }
-    double d = diff(freq, key, n);
-    printf("%lf", d);
+    double d = normalized_diff(freq, key, n);
+    if (d > threshold) {
+        printf("\nYou score %.3lf > %.3lf.", d, threshold);
+    } else {
+        printf("\nYou score %.3lf < %.3lf.", d, threshold);
+    }
     free(key);
     return d < threshold;
 }
@@ -377,20 +398,20 @@ int main(int argc, char *argv[])
     double *padded_samples = pad_to_power_of_2(samples, n, &next_pow_of_2);
     double *out = malloc(next_pow_of_2 * sizeof(double));
     fft(padded_samples, out, next_pow_of_2);
-    // int status = genie_accept(out, next_pow_of_2); 
-    int status = 0;
-    if (status == 0) {
-        printf("fail");
+
+    if (argc == 2 && strcmp(argv[1], "key") == 0) {
+        for (int i = 0; i < next_pow_of_2; i++) {
+            // fprintf(stderr, "%.0f,%.3f\n", (double) SAMPLE_RATE/next_pow_of_2 * i, out[i]);
+            fprintf(stderr, "%.3f\n", out[i]);
+        }
     } else {
-        printf("success");
+        int status = genie_accept(out, next_pow_of_2); 
+        if (status == 0) {
+            printf("\n\nThe genie does not accept your summoning.");
+        } else {
+            printf("\n\nThe genie is summoned!");
+        }
     }
-
-    for (int i = 0; i < next_pow_of_2; i++) {
-        //fprintf(stderr, "%.0f,%.3f\n", (double) SAMPLE_RATE/next_pow_of_2 * i, out[i]);
-        fprintf(stderr, "%.3f\n", out[i]);
-    }
-
-    //FILE* stream = fopen("genie_key.txt", "r");
 
     free(data.recordedSamples);
     free(samples);
