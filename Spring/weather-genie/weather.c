@@ -137,7 +137,7 @@ int parse(const char * const json) {
     }
     hour = (hour - 1) % 12 + 1;
 
-    printf("~-~-~-~-~-~\n\nIt's %i degrees outside with %s.\n\nThe high is %i and the low is %i.\n\nSunset is at %i:%i %s.\n\n~-~-~-~-~-~\n\n", temp_fahrenheit, desc, high_fahrenheit, low_fahrenheit, hour, minute, am_pm);
+    printf("~-~-~-~-~-~\n\nIt's %i degrees outside with %s.\n\nThe high is %i and the low is %i.\n\nSunset is at %i:%02i %s.\n\n~-~-~-~-~-~\n\n", temp_fahrenheit, desc, high_fahrenheit, low_fahrenheit, hour, minute, am_pm);
 
 end:
     cJSON_Delete(weather_json);
